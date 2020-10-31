@@ -1,0 +1,41 @@
+<%- include("partials/header") %>
+<% 	var mongoose = require("mongoose");
+	var Food = require("./models/foodNames.js"); %>
+
+<div class = "container">
+  <h1 class="display-4">search results for <%= search.query %> !</h1>
+  <a class="btn btn-primary btn-lg" href="/search" role="button">Search Again</a>
+	<p>
+		allergies: 
+		<% search.allergies.forEach(function(allergy){ %>
+			 <span> <%= allergy %> </span>
+		<% }); %> 
+	</p>
+	<% results.foods.forEach(function(item){ %> 
+		<div class = "result">
+			<p> <%= item.description%> </p>
+            <% if (item.ingredients == undefined){%>
+                <p>no ingredients found</p>
+            <% } else{ %>
+                <% search.allergies.forEach(function(allergy){ 
+                    var ingredients = item.ingredients.toLowerCase();
+                     	Food.findOne({allergen: allergy}, function(err, foodName){
+							if(err){
+								console.log(err); 
+							}else{
+								foodName.names.forEach(function(name){
+									if(ingredients.indexOf(name) > -1){ %>
+										<p>THERE IS DAIRY!!! </p>
+										<% break; %>
+									<% } %>
+								<% }); %>
+							<% }; %>
+						<% }); %>
+            	<% }); %>
+			<% } %>
+		</div>
+
+	<% }); %> 
+</div>
+
+<%- include("partials/footer") %>
